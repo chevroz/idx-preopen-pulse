@@ -1,0 +1,33 @@
+name: Daily IDX Pre-Market Mobile Push
+
+on:
+  schedule:
+    # 01:15 UTC is 08:15 WIB (Jakarta UTC+7), Monday to Friday
+    - cron: '15 1 * * 1-5'
+  workflow_dispatch: # Allows manual trigger from GitHub UI anytime
+
+jobs:
+  dispatch-premarket:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Trigger AI Pre-Market Strategy & Mobile Push
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          echo "Executing pre-market intelligence synthesis at 08:15 WIB..."
+          # If deployed, you can ping your app's push endpoint:
+          # curl -X POST "${APP_URL}/api/alerts/test-push" -H "Content-Type: application/json"

@@ -1,0 +1,6 @@
+{
+  "name": "IDX Pre-Open Pulse: Indonesia Market Terminal & Real-Time Alerts",
+  "description": "Pre-market Indonesian stock intelligence dashboard (IHSG/IDX) with prioritized news sorting, AI morning briefing, corporate actions watch, and real-time mobile push notifications.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
