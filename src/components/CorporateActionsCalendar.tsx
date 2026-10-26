@@ -68,10 +68,10 @@ export const CorporateActionsCalendar: React.FC<CorporateActionsCalendarProps> =
           </div>
           <div>
             <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
-              Kalender Aksi Korporasi &amp; Dividen Terkini (Minggu Ini 2026)
+              Kalender Aksi Korporasi &amp; Dividen Terkini (Terverifikasi BEI)
             </h3>
             <p className="text-xs text-slate-400">
-              Jadwal Cum Date, Ex Date, RUPSLB, dan Right Issue terverifikasi bursa IDX
+              Jadwal resmi keterbukaan informasi bursa: ASII (Rp98), UNTR (Rp667), HEXA (Rp705), AALI (Rp84) &amp; RUPSLB
             </p>
           </div>
         </div>
