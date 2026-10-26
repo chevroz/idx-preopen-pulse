@@ -264,7 +264,7 @@ export default function App() {
         alerts={alerts}
         onDispatchTestAlert={() =>
           handleDispatchPush(
-            'BBRI: Cum Dividen Interim Rp84/Saham',
+            'BBRI: Dividen Interim Rp135 & Buyback Rp3T',
             'Cum date sesi reguler hari ini sebelum market tutup 15:49 WIB.',
             'BBRI',
             'HIGH'

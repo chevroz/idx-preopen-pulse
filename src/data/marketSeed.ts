@@ -66,8 +66,8 @@ export const INITIAL_MACRO_INDICATORS: MacroIndicator[] = [
 export const INITIAL_NEWS_ITEMS: MarketNewsItem[] = [
   {
     id: 'idx-news-01',
-    title: 'Bank Rakyat Indonesia (BBRI) Umumkan Dividen Interim IDR 84/Saham, Cum Date Hari Ini',
-    summary: 'PT Bank Rakyat Indonesia (Persero) Tbk menetapkan pembagian dividen interim tahun buku 2024 sebesar Rp12,7 triliun atau Rp84 per lembar saham. Cum date pasar reguler dan negosiasi jatuh tempo pada perdagangan sesi hari ini.',
+    title: 'Bank Rakyat Indonesia (BBRI) Siapkan Dividen Interim Rp135/Saham & Realisasi Buyback Rp3T',
+    summary: 'PT Bank Rakyat Indonesia (Persero) Tbk menegaskan komitmen dividen payout ratio minimal 80% dari perolehan laba konsolidasi perseroan yang melampaui Rp60 triliun. Manajemen menetapkan indikasi dividen interim tunai sebesar Rp135 per lembar saham dan melanjutkan eksekusi program buyback saham senilai Rp3 triliun.',
     source: 'IDX Disclosure',
     publishedAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
     publishedTimeStr: 'Hari ini 08:12 WIB',
@@ -79,9 +79,9 @@ export const INITIAL_NEWS_ITEMS: MarketNewsItem[] = [
     readTime: '2 min',
     isFeatured: true,
     keyTakeaways: [
-      'Cum dividen pasar reguler dan negosiasi: Hari ini sebelum penutupan sesi 2',
-      'Indikasi dividen yield interim sekitar 1.8% - 2.1% di level harga saat ini',
-      'Diprediksi memicu lonjakan volume transaksi pre-opening dan akumulasi asing',
+      'Indikasi dividen interim Rp135/saham dengan yield interim ~3.05% di level harga saat ini',
+      'Cum date pasar reguler dan negosiasi jatuh tempo hari ini sebelum penutupan sesi 2 (15:49 WIB)',
+      'Eksekusi program buyback saham Rp3 triliun menopang stabilitas harga dan arus net buy asing',
     ],
   },
   {
@@ -342,9 +342,20 @@ export const INITIAL_CORPORATE_ACTIONS: CorporateAction[] = [
     exDate: '27 Okt 2026',
     recordingDate: '28 Okt 2026',
     paymentDate: '15 Nov 2026',
-    detail: 'Dividen interim tahun buku 2026 sebesar Rp84 per lembar saham. Total dividen Rp12,7 triliun. Batas akhir beli hak dividen di pasar reguler adalah hari ini.',
-    yieldPercent: 1.85,
-    amount: 'Rp84 / saham',
+    detail: 'Dividen interim tunai Rp135 per lembar saham (total distribusi ~Rp20,4 triliun). Bagian dari komitmen payout ratio minimal 80% dari laba konsolidasi perseroan.',
+    yieldPercent: 3.05,
+    amount: 'Rp135 / saham',
+  },
+  {
+    id: 'ca-bbri-buyback',
+    ticker: 'BBRI',
+    companyName: 'Bank Rakyat Indonesia (Persero) Tbk',
+    type: 'Public Expose',
+    date: 'Periode Berjalan 2026',
+    timeStr: 'BUYBACK AKTIF',
+    status: 'UPCOMING',
+    detail: 'Aksi korporasi Buyback Saham (Pembelian Kembali Saham) di pasar reguler senilai Rp3.000.000.000.000 (Rp3 Triliun) untuk insentif kepemilikan pekerja (ESOP/MSOP) dan stabilisasi harga.',
+    amount: 'Buyback Rp3 Triliun',
   },
   {
     id: 'ca-2',
@@ -453,7 +464,7 @@ export const DEFAULT_PREMARKET_BRIEFING: PreMarketBriefing = {
     {
       ticker: 'BBRI',
       action: 'BUY WATCH',
-      catalyst: 'Cum Dividen Interim hari ini (Rp84/saham) berpotensi memicu lonjakan transaksi di sesi pre-opening.',
+      catalyst: 'Cum dividen interim Rp135/saham (payout 80%) & realisasi buyback saham Rp3 triliun menopang sentimen transaksi di sesi pre-opening.',
       sentiment: 'bullish',
     },
     {

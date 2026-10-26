@@ -58,7 +58,7 @@ export const MobilePushCenterModal: React.FC<MobilePushCenterModalProps> = ({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: telegramChatId,
-        text: `🚨 *IDX PRE-OPEN TEST ALERT*\n\nBBRI: Cum Dividen Interim Rp84 hari ini!\nWIB Time: ${new Date().toLocaleTimeString('id-ID')} WIB\n\n_Terkirim dari IDX Pre-Open Terminal_`,
+        text: `🚨 *IDX PRE-OPEN TEST ALERT*\n\nBBRI: Dividen Interim Rp135 & Buyback Rp3T hari ini!\nWIB Time: ${new Date().toLocaleTimeString('id-ID')} WIB\n\n_Terkirim dari IDX Pre-Open Terminal_`,
         parse_mode: 'Markdown',
       }),
     })

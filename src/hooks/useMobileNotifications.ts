@@ -16,8 +16,8 @@ export function useMobileNotifications() {
   const [alerts, setAlerts] = useState<MobileAlert[]>([
     {
       id: 'init-1',
-      title: 'BBRI: Cum Dividen Interim Rp84 Hari Ini',
-      body: 'Cum date dividen interim Rp84/saham di pasar reguler. Penutupan sesi 2.',
+      title: 'BBRI: Dividen Interim Rp135 & Buyback Rp3T',
+      body: 'Cum date dividen interim Rp135/saham & realisasi buyback saham Rp3T di pasar reguler.',
       ticker: 'BBRI',
       impact: 'HIGH',
       timestamp: '08:12 WIB',

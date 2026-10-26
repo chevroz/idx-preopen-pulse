@@ -321,8 +321,8 @@ app.post('/api/alerts/test-push', (req: Request, res: Response) => {
   const { title, body, ticker, impact } = req.body || {};
   const alertPayload = {
     id: 'push-' + Date.now(),
-    title: title || '🚨 IDX PRE-OPEN ALERT: BBRI Cum Dividen Hari Ini',
-    body: body || 'BBRI dividen interim Rp84/saham cum-date sesi 1. Pasang antrian sebelum 08:45 WIB.',
+    title: title || '🚨 IDX PRE-OPEN ALERT: BBRI Dividen Interim Rp135 & Buyback Rp3T',
+    body: body || 'BBRI dividen interim Rp135/saham (payout 80%) & buyback Rp3T cum-date sesi 1. Pasang antrian sebelum 08:45 WIB.',
     ticker: ticker || 'BBRI',
     impact: impact || 'HIGH',
     timestamp: getWIBTime().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
