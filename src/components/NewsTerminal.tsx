@@ -35,6 +35,9 @@ export const NewsTerminal: React.FC<NewsTerminalProps> = ({
   const [selectedSector, setSelectedSector] = useState<string>('ALL');
   const [sortBy, setSortBy] = useState<'impact' | 'time' | 'bullish'>('impact');
   const [onlyWatchlist, setOnlyWatchlist] = useState(false);
+  // Default to ONLY BULLISH and 1 WEEK (7 days) as requested!
+  const [sentimentFilter, setSentimentFilter] = useState<'bullish' | 'ALL'>('bullish');
+  const [timeWindow, setTimeWindow] = useState<'7d' | '24h' | '3d' | 'ALL'>('7d');
   const [sentAlertId, setSentAlertId] = useState<string | null>(null);
   const [activeNewsModal, setActiveNewsModal] = useState<MarketNewsItem | null>(null);
 
@@ -51,18 +54,36 @@ export const NewsTerminal: React.FC<NewsTerminalProps> = ({
 
   // Filtering
   const filteredItems = newsItems.filter((item) => {
-    // Sector filter
+    // 1. Sentiment filter (Only Bullish by default)
+    if (sentimentFilter !== 'ALL' && item.sentiment !== sentimentFilter) {
+      return false;
+    }
+
+    // 2. Time Window filter (From a week before / 7 days)
+    const itemTime = new Date(item.publishedAt).getTime();
+    if (timeWindow === '7d') {
+      const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      if (itemTime < oneWeekAgo) return false;
+    } else if (timeWindow === '24h') {
+      const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+      if (itemTime < oneDayAgo) return false;
+    } else if (timeWindow === '3d') {
+      const threeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
+      if (itemTime < threeDaysAgo) return false;
+    }
+
+    // 3. Sector filter
     if (selectedSector !== 'ALL' && item.sector !== selectedSector) {
       return false;
     }
 
-    // Watchlist filter
+    // 4. Watchlist filter
     if (onlyWatchlist) {
       const hasWatchlistTicker = item.tickers.some((t) => watchlist.includes(t));
       if (!hasWatchlistTicker) return false;
     }
 
-    // Search query
+    // 5. Search query
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase();
       const matchTitle = item.title.toLowerCase().includes(q);
@@ -237,6 +258,90 @@ export const NewsTerminal: React.FC<NewsTerminalProps> = ({
           </div>
         </div>
 
+        {/* Bullish & Timeframe Specific Controls (User Request Preset) */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-slate-800/80 text-xs">
+          {/* Sentiment Filter Toggle */}
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400 font-mono text-[11px] flex items-center gap-1">
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+              Sentimen:
+            </span>
+            <div className="inline-flex p-0.5 bg-slate-950 rounded-lg border border-slate-800 text-xs">
+              <button
+                onClick={() => setSentimentFilter('bullish')}
+                className={`px-2.5 py-1 rounded-md font-bold transition cursor-pointer flex items-center gap-1 ${
+                  sentimentFilter === 'bullish'
+                    ? 'bg-emerald-500 text-slate-950 shadow-xs'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <span>Hanya Bullish</span>
+                <span className="text-[10px] bg-slate-900/30 text-emerald-950 px-1 rounded">Aktif</span>
+              </button>
+              <button
+                onClick={() => setSentimentFilter('ALL')}
+                className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                  sentimentFilter === 'ALL'
+                    ? 'bg-slate-700 text-white font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Semua Sentimen
+              </button>
+            </div>
+          </div>
+
+          {/* Timeframe Filter (1 Minggu / 7 Hari) */}
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400 font-mono text-[11px] flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-teal-400" />
+              Periode Berita:
+            </span>
+            <div className="inline-flex p-0.5 bg-slate-950 rounded-lg border border-slate-800 text-xs">
+              <button
+                onClick={() => setTimeWindow('7d')}
+                className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                  timeWindow === '7d'
+                    ? 'bg-teal-500/20 text-teal-300 font-bold border border-teal-500/40'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                1 Minggu Terakhir
+              </button>
+              <button
+                onClick={() => setTimeWindow('3d')}
+                className={`px-2 py-1 rounded-md transition cursor-pointer ${
+                  timeWindow === '3d'
+                    ? 'bg-teal-500/20 text-teal-300 font-bold border border-teal-500/40'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                3 Hari
+              </button>
+              <button
+                onClick={() => setTimeWindow('24h')}
+                className={`px-2 py-1 rounded-md transition cursor-pointer ${
+                  timeWindow === '24h'
+                    ? 'bg-teal-500/20 text-teal-300 font-bold border border-teal-500/40'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                24 Jam
+              </button>
+              <button
+                onClick={() => setTimeWindow('ALL')}
+                className={`px-2 py-1 rounded-md transition cursor-pointer ${
+                  timeWindow === 'ALL'
+                    ? 'bg-slate-800 text-white font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Semua
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Sector Filter Chips */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
           {sectors.map((sec) => (
@@ -254,6 +359,37 @@ export const NewsTerminal: React.FC<NewsTerminalProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Active Bullish Filter Banner */}
+      {sentimentFilter === 'bullish' && (
+        <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-950 border border-emerald-500/40 text-xs shadow-md">
+          <div className="flex items-center gap-2.5">
+            <span className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+              <TrendingUp className="w-4 h-4" />
+            </span>
+            <div>
+              <div className="font-bold text-emerald-300 flex items-center gap-1.5">
+                <span>Hanya Berita Saham Bullish {timeWindow === '7d' ? '(1 Minggu Terakhir)' : `(Periode ${timeWindow})`}</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">
+                  {sortedItems.length} Saham Terpilih
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300 mt-0.5">
+                Katalis dividen, laba kuartalan, ekspansi bisnis, dan sentimen komoditas positif 7 hari ke belakang
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              setSentimentFilter('ALL');
+              setTimeWindow('ALL');
+            }}
+            className="text-[11px] font-mono text-slate-400 hover:text-white underline cursor-pointer"
+          >
+            Tampilkan Semua Sentimen
+          </button>
+        </div>
+      )}
 
       {/* News Items Count Bar */}
       <div className="flex items-center justify-between text-xs text-slate-400 font-mono px-1">

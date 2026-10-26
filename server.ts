@@ -166,8 +166,25 @@ app.get('/api/market/macro', (_req: Request, res: Response) => {
 });
 
 app.get('/api/news', (req: Request, res: Response) => {
-  const { sector, impact, ticker, search, sort } = req.query;
+  const { sector, impact, ticker, search, sort, sentiment, timeframe } = req.query;
   let items = [...INITIAL_NEWS_ITEMS];
+
+  // Sentiment filter
+  if (sentiment && typeof sentiment === 'string' && sentiment !== 'ALL') {
+    items = items.filter((n) => n.sentiment === sentiment);
+  }
+
+  // Timeframe filter (e.g. 'week' = past 7 days)
+  if (timeframe === 'week' || timeframe === '7d') {
+    const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    items = items.filter((n) => new Date(n.publishedAt).getTime() >= oneWeekAgo);
+  } else if (timeframe === '24h') {
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    items = items.filter((n) => new Date(n.publishedAt).getTime() >= oneDayAgo);
+  } else if (timeframe === '3d') {
+    const threeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
+    items = items.filter((n) => new Date(n.publishedAt).getTime() >= threeDaysAgo);
+  }
 
   if (sector && typeof sector === 'string' && sector !== 'ALL') {
     items = items.filter((n) => n.sector === sector);
