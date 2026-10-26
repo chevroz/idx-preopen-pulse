@@ -49,6 +49,11 @@ export interface CorporateAction {
   detail: string;
   yieldPercent?: number;
   amount?: string;
+  cumDate?: string;
+  exDate?: string;
+  paymentDate?: string;
+  recordingDate?: string;
+  status?: 'CUM_TODAY' | 'EX_DATE' | 'UPCOMING';
 }
 
 export interface PreMarketBriefing {
