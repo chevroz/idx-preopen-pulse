@@ -224,8 +224,50 @@ app.get('/api/news', (req: Request, res: Response) => {
   res.json(items);
 });
 
-app.get('/api/corporate-actions', (_req: Request, res: Response) => {
-  res.json(INITIAL_CORPORATE_ACTIONS);
+let liveCorporateActions = [...INITIAL_CORPORATE_ACTIONS];
+
+app.get('/api/corporate-actions', (req: Request, res: Response) => {
+  const { verifiedOnly, ticker } = req.query;
+  let result = [...liveCorporateActions];
+
+  if (verifiedOnly === 'true') {
+    result = result.filter((a) => a.verificationStatus === 'VERIFIED_OFFICIAL');
+  }
+
+  if (ticker && typeof ticker === 'string') {
+    result = result.filter((a) => a.ticker === ticker.toUpperCase());
+  }
+
+  res.json(result);
+});
+
+// Endpoint to audit / confirm corporate actions before display
+app.post('/api/data-verification/confirm', (req: Request, res: Response) => {
+  const { actionId, status } = req.body || {};
+  if (!actionId) {
+    return res.status(400).json({ error: 'actionId is required' });
+  }
+
+  liveCorporateActions = liveCorporateActions.map((action) => {
+    if (action.id === actionId) {
+      return {
+        ...action,
+        verificationStatus: status || 'VERIFIED_OFFICIAL',
+        confirmedAt: `${getWIBTime().toLocaleDateString('id-ID')} ${getWIBTime().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`,
+        confirmedBy: 'BEI/KSEI Pre-Flight Audit System',
+        verificationChecklist: {
+          ...action.verificationChecklist,
+          kseiNoticeConfirmed: status === 'VERIFIED_OFFICIAL',
+          beiDisclosureConfirmed: status === 'VERIFIED_OFFICIAL',
+          tradingScheduleConfirmed: status === 'VERIFIED_OFFICIAL',
+        },
+      };
+    }
+    return action;
+  });
+
+  const updated = liveCorporateActions.find((a) => a.id === actionId);
+  res.json({ success: true, updatedAction: updated });
 });
 
 // AI Morning Briefing Generator via Gemini 3.8 Flash

@@ -10,6 +10,15 @@ export type SectorType =
   | 'Infrastructure & Utilities'
   | 'Macro & Policy';
 
+export type VerificationStatus = 'VERIFIED_OFFICIAL' | 'PENDING_CONFIRMATION' | 'REJECTED_UNVERIFIED';
+
+export interface VerificationChecklist {
+  kseiNoticeConfirmed: boolean;
+  beiDisclosureConfirmed: boolean;
+  boardResolutionConfirmed: boolean;
+  tradingScheduleConfirmed: boolean;
+}
+
 export interface MarketNewsItem {
   id: string;
   title: string;
@@ -26,6 +35,8 @@ export interface MarketNewsItem {
   readTime: string;
   keyTakeaways: string[];
   isFeatured?: boolean;
+  verificationStatus?: VerificationStatus;
+  officialDocRef?: string;
 }
 
 export interface MacroIndicator {
@@ -54,6 +65,13 @@ export interface CorporateAction {
   paymentDate?: string;
   recordingDate?: string;
   status?: 'CUM_TODAY' | 'EX_DATE' | 'UPCOMING';
+  verificationStatus: VerificationStatus;
+  verificationSource: string;
+  officialDocRef?: string;
+  confirmedAt?: string;
+  confirmedBy?: string;
+  verificationChecklist: VerificationChecklist;
+  sourceUrl?: string;
 }
 
 export interface PreMarketBriefing {

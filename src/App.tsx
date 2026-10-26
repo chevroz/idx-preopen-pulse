@@ -7,6 +7,7 @@ import { CorporateActionsCalendar } from './components/CorporateActionsCalendar'
 import { MobilePushCenterModal } from './components/MobilePushCenterModal';
 import { ArchitectureGuideModal } from './components/ArchitectureGuideModal';
 import { FreeHostingModal } from './components/FreeHostingModal';
+import { DataConfirmationModal } from './components/DataConfirmationModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { useMobileNotifications } from './hooks/useMobileNotifications';
 import {
@@ -15,6 +16,7 @@ import {
   CorporateAction,
   PreMarketBriefing,
   MarketSessionInfo,
+  VerificationStatus,
 } from './types/market';
 import {
   INITIAL_MACRO_INDICATORS,
@@ -49,6 +51,9 @@ export default function App() {
   const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [isFreeHostingModalOpen, setIsFreeHostingModalOpen] = useState(false);
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [highlightedTicker, setHighlightedTicker] = useState<string | null>(null);
+  const [strictVerifiedOnly, setStrictVerifiedOnly] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Notification Hook
@@ -162,6 +167,52 @@ export default function App() {
     }, 3500);
   };
 
+  const handleOpenVerificationModal = (ticker?: string) => {
+    setHighlightedTicker(ticker || null);
+    setIsVerificationModalOpen(true);
+  };
+
+  const handleConfirmAction = async (actionId: string, updatedStatus: VerificationStatus) => {
+    setCorporateActions((prev) =>
+      prev.map((item) =>
+        item.id === actionId
+          ? {
+              ...item,
+              verificationStatus: updatedStatus,
+              confirmedAt: `${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`,
+              confirmedBy: 'Manual Audit Override (Analyst Desk)',
+              verificationChecklist: {
+                ...item.verificationChecklist,
+                kseiNoticeConfirmed: updatedStatus === 'VERIFIED_OFFICIAL',
+                beiDisclosureConfirmed: updatedStatus === 'VERIFIED_OFFICIAL',
+                tradingScheduleConfirmed: updatedStatus === 'VERIFIED_OFFICIAL',
+              },
+            }
+          : item
+      )
+    );
+
+    try {
+      await fetch('/api/data-verification/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actionId, status: updatedStatus }),
+      });
+    } catch (err) {
+      console.warn('Backend confirmation sync skipped', err);
+    }
+
+    showToast(
+      updatedStatus === 'VERIFIED_OFFICIAL'
+        ? 'Data berhasil diverifikasi dan disahkan untuk tayang!'
+        : 'Data berhasil ditolak/disembunyikan dari penayangan.'
+    );
+  };
+
+  const pendingVerificationCount = corporateActions.filter(
+    (c) => c.verificationStatus === 'PENDING_CONFIRMATION'
+  ).length;
+
   const handleDispatchPush = (
     title: string,
     body: string,
@@ -186,6 +237,8 @@ export default function App() {
         }}
         onOpenGuideModal={() => setIsGuideModalOpen(true)}
         onOpenFreeHostingModal={() => setIsFreeHostingModalOpen(true)}
+        onOpenVerificationModal={() => handleOpenVerificationModal()}
+        pendingVerificationCount={pendingVerificationCount}
       />
 
       {/* Main Container */}
@@ -204,10 +257,12 @@ export default function App() {
           watchlist={watchlist}
         />
 
-        {/* Corporate Actions & Dividends Today */}
+        {/* Corporate Actions & Dividends Today with Pre-Display Verification */}
         <CorporateActionsCalendar
           corporateActions={corporateActions}
           onDispatchPush={handleDispatchPush}
+          onOpenVerificationModal={handleOpenVerificationModal}
+          strictVerifiedOnly={strictVerifiedOnly}
         />
 
         {/* Sorted Pre-Market News Terminal */}
@@ -229,6 +284,13 @@ export default function App() {
             </span>
           </div>
           <div className="flex items-center gap-4 text-slate-400">
+            <button
+              onClick={() => handleOpenVerificationModal()}
+              className="text-emerald-400 hover:underline transition cursor-pointer"
+            >
+              Audit &amp; Verifikasi Data
+            </button>
+            <span>•</span>
             <button
               onClick={() => setIsFreeHostingModalOpen(true)}
               className="text-teal-400 hover:underline transition cursor-pointer"
@@ -285,6 +347,20 @@ export default function App() {
       <FreeHostingModal
         isOpen={isFreeHostingModalOpen}
         onClose={() => setIsFreeHostingModalOpen(false)}
+      />
+
+      {/* Pre-Display Data Confirmation & Verification Modal */}
+      <DataConfirmationModal
+        isOpen={isVerificationModalOpen}
+        onClose={() => {
+          setIsVerificationModalOpen(false);
+          setHighlightedTicker(null);
+        }}
+        corporateActions={corporateActions}
+        onConfirmAction={handleConfirmAction}
+        strictVerifiedOnly={strictVerifiedOnly}
+        onToggleStrictVerifiedOnly={setStrictVerifiedOnly}
+        highlightedTicker={highlightedTicker}
       />
 
       {/* Toast Notification */}

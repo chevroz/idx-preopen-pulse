@@ -1,6 +1,6 @@
 import React from 'react';
 import { PWAInstallButton } from './PWAInstallButton';
-import { Bell, Volume2, VolumeX, BookOpen, Clock, Activity, Cloud } from 'lucide-react';
+import { Bell, Volume2, VolumeX, BookOpen, Clock, Activity, Cloud, ShieldCheck } from 'lucide-react';
 import { MarketSessionInfo } from '../types/market';
 
 interface HeaderProps {
@@ -11,6 +11,8 @@ interface HeaderProps {
   onOpenAlertsModal: () => void;
   onOpenGuideModal: () => void;
   onOpenFreeHostingModal: () => void;
+  onOpenVerificationModal: () => void;
+  pendingVerificationCount?: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,6 +23,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAlertsModal,
   onOpenGuideModal,
   onOpenFreeHostingModal,
+  onOpenVerificationModal,
+  pendingVerificationCount = 0,
 }) => {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#090d16]/90 backdrop-blur-md px-3 sm:px-6 py-2.5">
@@ -63,6 +67,21 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right Action Buttons */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Data Verification Button */}
+          <button
+            onClick={onOpenVerificationModal}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 hover:text-emerald-200 text-xs font-medium transition cursor-pointer"
+            title="Konfirmasi & Audit Data Sebelum Ditampilkan"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Audit Data</span>
+            {pendingVerificationCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 font-bold text-[10px]">
+                {pendingVerificationCount}
+              </span>
+            )}
+          </button>
+
           {/* Free Hosting Guide Button */}
           <button
             onClick={onOpenFreeHostingModal}
